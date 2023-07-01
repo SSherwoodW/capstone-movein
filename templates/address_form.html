@@ -1,0 +1,25 @@
+{% extends 'base.html' %} {% block title %} Address Search {% endblock %} 
+
+{% block content %}
+<div class="wrapper">
+        <form id="address-lookup-form" method="post">
+          <div>
+            <label for="street-address">Street address</label>
+            <input type="text" id="street-address" name="street-address" autocomplete="street-address" required enterkeyhint="next"></input>
+          </div>
+          <div>
+            <label for="postal-code">ZIP or postal code </label>
+            <input class="postal-code" id="postal-code" name="postal-code" autocomplete="postal-code" enterkeyhint="next">
+          </div>
+          <div>
+            <label for="city">City</label>
+            <input required type="text" id="city" name="city" autocomplete="address-level2" enterkeyhint="next">
+          </div>
+          <div>
+            <label for="state">State</label>
+            <input required type="text" id="state" name="state" autocomplete="address-level2" enterkeyhint="next">
+          </div>
+        </form>
+        <button form="address-lookup-form" formaction="/api/geocode">Search</button>
+</div>
+{% endblock %}

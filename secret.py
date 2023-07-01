@@ -1,0 +1,3 @@
+MQ_SECRET_KEY = "dfwOTFsbnCh15tihZdj8U9VeV4fiTcyb"
+
+GM_SECRET_KEY = "AIzaSyAOFeczY7SAyGMuSYp9tBtfniTmSiy8RxU"

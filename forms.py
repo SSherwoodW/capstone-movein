@@ -1,0 +1,54 @@
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, IntegerField, TextAreaField
+from wtforms.validators import InputRequired, Email, Optional, NumberRange, URL, AnyOf, Length
+from models import User
+
+
+class CommentForm(FlaskForm):
+    """Form for adding comment to Favorite Searches."""
+
+    text = TextAreaField('comment', validators=[Length(max=100)])
+
+
+class UserAddForm(FlaskForm):
+    """Form for adding users."""
+
+    username = StringField('Username', validators=[InputRequired()])
+    first_name = StringField('First name', validators=[InputRequired()])
+    last_name = StringField('Last name', validators=[InputRequired()])
+    email = StringField('E-mail', validators=[InputRequired(), Email()])
+    password = PasswordField('Password', validators=[
+                             InputRequired(), Length(min=8)])
+
+    def validate(self, extra_validators=None):
+        initial_validation = super(UserAddForm, self).validate()
+        if not initial_validation:
+            return False
+        user = User.query.filter_by(email=self.email.data).first()
+        if user:
+            self.email.errors.append("Email already registered")
+            return False
+        return True
+
+
+class LoginForm(FlaskForm):
+    """Login form."""
+
+    username = StringField('Username', validators=[InputRequired()])
+    password = PasswordField('Password', validators=[Length(min=6)])
+
+    def validate(self, extra_validators=None):
+        initial_validation = super(LoginForm, self).validate()
+        if not initial_validation:
+            return False
+        else:
+            return True
+
+
+class AddressSearchForm(FlaskForm):
+    """Address lookup form."""
+
+    address = StringField('Street Address', validators=[InputRequired()])
+    zipcode = IntegerField('Zipcode', validators=[Length(min=5, max=9)])
+    city = StringField('City', validators=[InputRequired()])
+    state = StringField('State', validators=[InputRequired()])
