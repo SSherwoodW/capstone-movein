@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 
 
 from models import User, db, connect_db
-from forms import UserAddForm
+from forms import UserAddForm, LoginForm, CommentForm
 from secret import MQ_SECRET_KEY
 
 CURR_USER_KEY = "curr_user"

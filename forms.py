@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, IntegerField, TextAreaField
 from wtforms.validators import InputRequired, Email, Optional, NumberRange, URL, AnyOf, Length
 from models import User
+import email_validator
 
 
 class CommentForm(FlaskForm):
@@ -45,10 +46,10 @@ class LoginForm(FlaskForm):
             return True
 
 
-class AddressSearchForm(FlaskForm):
-    """Address lookup form."""
+# class AddressSearchForm(FlaskForm):
+#     """Address lookup form."""
 
-    address = StringField('Street Address', validators=[InputRequired()])
-    zipcode = IntegerField('Zipcode', validators=[Length(min=5, max=9)])
-    city = StringField('City', validators=[InputRequired()])
-    state = StringField('State', validators=[InputRequired()])
+#     address = StringField('Street Address', validators=[InputRequired()])
+#     zipcode = IntegerField('Zipcode', validators=[Length(min=5, max=9)])
+#     city = StringField('City', validators=[InputRequired()])
+#     state = StringField('State', validators=[InputRequired()])
