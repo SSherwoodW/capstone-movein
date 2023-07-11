@@ -1,37 +1,40 @@
 import os
 import requests
-import json
 
-from flask import Flask, render_template, request, flash, redirect, session, g, abort
+
+from flask import Flask, g, render_template, request, flash, redirect, session, abort
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 
-from models import User, db, connect_db
+from models import db, connect_db, User, City, State, Location, Favorite
 from forms import UserAddForm, LoginForm, CommentForm
-from secret import MQ_SECRET_KEY
+from secret import MQ_SECRET_KEY, RM_SECRET_KEY
+
+
+MQ_API_BASE_URL = "https://www.mapquestapi.com/geocoding/v1"
+RM_API_BASE_URL = "https://realty-mole-property-api.p.rapidapi.com/zipCodes"
+key_mq = MQ_SECRET_KEY
+key_rm = RM_SECRET_KEY
 
 CURR_USER_KEY = "curr_user"
-MQ_API_BASE_URL = "https://www.mapquestapi.com/geocoding/v1"
-key_mq = MQ_SECRET_KEY
-
 
 app = Flask(__name__)
 app.app_context().push()
 
 app.config['SQLALCHEMY_DATABASE_URI'] = (
-    os.environ.get('DATABASE_URL', 'postgresql:///movein_db'))
+    os.environ.get('DATABASE_URL', 'postgresql:///moveIn'))
 
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
-app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_ECHO'] = False
 app.config['SECRET_KEY'] = os.environ.get(
     'SECRET_KEY', "this is wildly unpredictable")
 toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
-db.create_all()
+# db.drop_all()
 
 
 #########################################################################################################################
@@ -42,9 +45,11 @@ db.create_all()
 def add_user_to_g():
     """If we're logged in, add curr user to Flask global."""
 
-    if CURR_USER_KEY in session:
-        g.user = db.session.get(User, CURR_USER_KEY)
-
+    maybe_user_id = session.get(CURR_USER_KEY)
+    if maybe_user_id is not None:
+        g.user = db.session.get(User, maybe_user_id)
+    # if CURR_USER_KEY in session:
+    #     g.user = db.session.get(User, CURR_USER_KEY)
     else:
         g.user = None
 
@@ -81,8 +86,10 @@ def signup():
             user = User.signup(
                 username=form.username.data,
                 password=form.password.data,
+                first_name=form.first_name.data,
+                last_name=form.last_name.data,
                 email=form.email.data,
-                image_url=form.image_url.data or User.image_url.default.arg,
+
             )
             db.session.commit()
 
@@ -92,16 +99,44 @@ def signup():
 
         do_login(user)
 
-        return redirect("/")
+        return redirect("/search")
 
     else:
         return render_template('users/signup.html', form=form)
 
 
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    """Handle user login."""
+
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        user = User.authenticate(form.username.data,
+                                 form.password.data)
+
+        if user:
+            do_login(user)
+            flash(f"Hello, {user.username}!", "success")
+            return redirect("/search")
+
+        flash("Invalid credentials.", 'danger')
+
+    return render_template('users/login.html', form=form)
+
+
+@app.route('/logout')
+def logout():
+    """Handle logout of user."""
+    do_logout()
+    flash("You've logged out of MoveIn.")
+
+    return redirect('/login')
 #########################################################################################################################
 # Display location on Map via:
 #  Mapquest API geocoding
 # Google Maps API marker
+
 
 def get_coords(address):
     res = requests.get(f"{MQ_API_BASE_URL}/address",
@@ -113,22 +148,34 @@ def get_coords(address):
     return coords
 
 
+def get_realty_data(zip_code):
+    res = requests.get(f"{RM_API_BASE_URL}/{zip_code}",
+                       headers={'X-RapidAPI-Key': key_rm, 'X-RapidAPI-Host': "realty-mole-property-api.p.rapidapi.com", 'Content-Type': 'application/json'})
+    data = res.json()
+    return data
+
+
 @ app.route('/search')
 def show_mapping():
+
     return render_template("address_form.html")
 
 
 @ app.route('/api/geocode', methods=["POST"])
 def locate_on_map():
-    print(request)
     data = request.json
-    location = data['address']
-    coords = get_coords(location)
-    print(coords)
+    address = data['address']
+    coords = get_coords(address)
     return coords
 
 
-@ app.route('/api/map')
-def show_map():
+@app.route('/api/rental-data', methods=["POST"])
+def get_rental_data():
+    data = request.json
+    zip_code = data['zipcode']
+    rental_data = get_realty_data(zip_code)
+    print(rental_data)
+    return rental_data
 
-    return render_template("map.html")
+
+# @ app.route('/search/favorite')

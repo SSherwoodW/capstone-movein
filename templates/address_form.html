@@ -1,25 +1,25 @@
 {% extends 'base.html' %} {% block title %} Address Search {% endblock %} 
 
 {% block content %}
-<div class="wrapper">
+<div class="container-fluid">
         <form id="address-lookup-form" method="post">
-          <div>
-            <label for="street-address">Street address</label>
-            <input type="text" id="street-address" name="street-address" autocomplete="street-address" required enterkeyhint="next"></input>
+          <div class="mb-3">
+            <label for="street-address" class="form-label">Street address</label>
+            <input type="text" id="street-address" name="street-address" autocomplete="street-address" required enterkeyhint="next" class="form-control"></input>
           </div>
-          <div>
-            <label for="postal-code">ZIP or postal code </label>
-            <input required class="postal-code" id="postal-code" name="postal-code" autocomplete="postal-code" enterkeyhint="next">
+          <div class="mb-3">
+            <label for="postal-code" class="form-label">ZIP or postal code </label>
+            <input required id="postal-code" name="postal-code" autocomplete="postal-code" enterkeyhint="next" class="form-control">
           </div>
-          <div>
-            <label for="city">City</label>
-            <input required type="text" id="city" name="city" autocomplete="address-level2" enterkeyhint="next">
+          <div class="mb-3">
+            <label for="city" class="form-label">City</label>
+            <input required type="text" id="city" name="city" autocomplete="address-level2" enterkeyhint="next" class="form-control">
           </div>
-          <div>
-            <label for="state">State</label>
-            <input required type="text" id="state" name="state" autocomplete="address-level2" enterkeyhint="next">
+          <div class="mb-3">
+            <label for="state" class="form-label">State</label>
+            <input required type="text" id="state" name="state" autocomplete="address-level2" enterkeyhint="next" class="form-control">
           </div>
         </form>
-        <button form="address-lookup-form" formaction="/api/geocode">Search</button>
+        <button class="btn btn-primary" form="address-lookup-form" formaction="/api/geocode">Search</button>
 </div>
 {% endblock %}

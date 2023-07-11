@@ -46,10 +46,18 @@ class LoginForm(FlaskForm):
             return True
 
 
-# class AddressSearchForm(FlaskForm):
-#     """Address lookup form."""
+class AddressForm(FlaskForm):
+    """Address search form."""
 
-#     address = StringField('Street Address', validators=[InputRequired()])
-#     zipcode = IntegerField('Zipcode', validators=[Length(min=5, max=9)])
-#     city = StringField('City', validators=[InputRequired()])
-#     state = StringField('State', validators=[InputRequired()])
+    address = StringField('Street Address', validators=[InputRequired()])
+    zipcode = IntegerField('ZIP or postal code', validators=[
+                           InputRequired(), Length(min=5, max=9)])
+    city = StringField('City', validators=[InputRequired()])
+    state = StringField('State', validators=[InputRequired()])
+
+    def validate_on_submit(self, extra_validators=None):
+        initial_validation = super(AddressForm, self).validate()
+        if not initial_validation:
+            return False
+        else:
+            return True

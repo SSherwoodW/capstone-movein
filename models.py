@@ -14,38 +14,38 @@ class User(db.Model):
 
     id = db.Column(
         db.Integer,
-        primary_key=True
+        primary_key=True,
     )
 
     email = db.Column(
         db.Text,
         nullable=False,
-        unique=True
+        unique=True,
     )
 
     username = db.Column(
         db.Text,
         nullable=False,
-        unique=True
+        unique=True,
     )
 
     first_name = db.Column(
         db.Text,
-        nullable=False
+        nullable=False,
     )
 
     last_name = db.Column(
         db.Text,
-        nullable=False
+        nullable=False,
     )
 
     location = db.Column(
-        db.Text
+        db.Text,
     )
 
     password = db.Column(
         db.Text,
-        nullable=False
+        nullable=False,
     )
 
     def __repr__(self):
@@ -158,9 +158,11 @@ class Location(db.Model):
         db.ForeignKey('users.id', ondelete='cascade')
     )
 
+    city = db.relationship('City')
+
 
 class Favorite(db.Model):
-    """Mapping user saved seraches to locations."""
+    """Mapping user saved searches to locations."""
 
     __tablename__ = 'favorites'
 
@@ -169,7 +171,7 @@ class Favorite(db.Model):
         primary_key=True
     )
 
-    rent_avg = db.Column(
+    onebed_rent_avg = db.Column(
         db.Integer,
         nullable=False
     )
