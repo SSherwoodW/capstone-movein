@@ -20,6 +20,8 @@
             crossorigin="anonymous"></script>
         <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
         <script type="module" src="/static/js/index.js"></script>
+        <script type="module" src="/static/js/favorites.js"></script>
+
     </head>
     <body>
         <body class="{% block body_class %}{% endblock %}">
@@ -45,7 +47,7 @@
           {{ g.user.username }}
         </a>
       </li>
-      <li class="nav-item"><a href="/favorites">Favorites</a></li>
+      <li id="favorites" class="nav-item"><a href="/favorites">Favorites</a></li>
       <li class="nav-item"><a href="/logout">Log out</a></li>
       {% endif %}
     </ul>
@@ -61,7 +63,7 @@
         <div id="map" class="container-fluid"></div>
         </div>
 
-        <div id="rental-data">Rental averages for your zip code will appear here. </div>
+        <!-- <div id="rental-data">Rental averages for your zip code will appear here. </div> -->
 
         <script src="https://unpkg.com/jquery"></script>
         <script src="https://unpkg.com/axios/dist/axios.js"></script>

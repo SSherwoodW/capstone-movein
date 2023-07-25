@@ -109,6 +109,16 @@ class City(db.Model):
 
     state = db.relationship('State')
 
+    @classmethod
+    def get_or_create(cls, name):
+        exists = db.session.query(State.name).filter_by(name=name).first()
+        if exists is None:
+            new_state = State(name=name)
+            db.session.add(new_state)
+            db.session.commit()
+        else:
+            name = exists
+
 
 class State(db.Model):
     """A U.S. state."""
@@ -122,10 +132,18 @@ class State(db.Model):
 
     name = db.Column(
         db.Text,
-        nullable=False
+        nullable=False,
+        unique=True
     )
 
     city = db.relationship('City')
+
+    @classmethod
+    def get_or_create(cls, name):
+        exists: db.session.query(State.id).filter_by(name=name).scalar()
+        if exists:
+            return db.session.query(State).filter_by(name=name).first()
+        return cls(name=name)
 
 
 class Location(db.Model):
@@ -153,6 +171,11 @@ class Location(db.Model):
         db.ForeignKey('cities.id', ondelete='cascade')
     )
 
+    bedrooms = db.Column(
+        db.Integer,
+        nullable=False
+    )
+
     user_id = db.Column(
         db.Integer,
         db.ForeignKey('users.id', ondelete='cascade')
@@ -171,13 +194,9 @@ class Favorite(db.Model):
         primary_key=True
     )
 
-    onebed_rent_avg = db.Column(
+    rent_average = db.Column(
         db.Integer,
         nullable=False
-    )
-
-    comment = db.Column(
-        db.String(100)
     )
 
     user_id = db.Column(

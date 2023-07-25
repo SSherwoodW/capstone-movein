@@ -5,12 +5,6 @@ from models import User
 import email_validator
 
 
-class CommentForm(FlaskForm):
-    """Form for adding comment to Favorite Searches."""
-
-    text = TextAreaField('comment', validators=[Length(max=100)])
-
-
 class UserAddForm(FlaskForm):
     """Form for adding users."""
 
@@ -49,6 +43,8 @@ class LoginForm(FlaskForm):
 class AddressForm(FlaskForm):
     """Address search form."""
 
+    bedrooms = IntegerField('Bedrooms', validators=[
+                            InputRequired(), NumberRange(min=0, max=4)])
     address = StringField('Street Address', validators=[InputRequired()])
     zipcode = IntegerField('ZIP or postal code', validators=[
                            InputRequired(), Length(min=5, max=9)])
@@ -61,3 +57,10 @@ class AddressForm(FlaskForm):
             return False
         else:
             return True
+
+
+class FavoriteForm(FlaskForm):
+    """Add search to favorites form."""
+
+    comment = TextAreaField('Comment', validators=[
+                            Optional(), Length(max=250)])
